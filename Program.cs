@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace TicTacToe_ConsoleGame
 {
+    /// <summary>
+    /// Date: 03 Apr 2023
+    /// Name: Kihyun Kim
+    /// </summary>
     class Program
     {
         // the playField
