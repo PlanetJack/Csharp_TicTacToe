@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace TicTacToe_ConsoleGame
             {'7', '8', '9'}, // Row 2
         };
 
-
+        static int turns = 0;
 
         static void Main(string[] args)
         {
@@ -30,34 +31,127 @@ namespace TicTacToe_ConsoleGame
                 if (player == 2)
                 {
                     player = 1;
-                    EnterXorO(player, input);
+                    EnterXorO('O', input);
                 }
                 else if (player == 1)
                 {
                     player = 2;
-                    EnterXorO(player, input);
+                    EnterXorO('X', input);
                 }
 
                 SetField();
 
+                #region
+                // Check winning condition
+                char[] playerChars = { 'X', 'O' };
+
+                foreach (char playerChar in playerChars)
+                {
+                    if (((playField[0, 0] == playerChar) && (playField[0, 1] == playerChar) && (playField[0, 2] == playerChar)) // 1,2,3
+                      || ((playField[1, 0] == playerChar) && (playField[1, 1] == playerChar) && (playField[1, 2] == playerChar)) // 4,5,6
+                      || ((playField[2, 0] == playerChar) && (playField[2, 1] == playerChar) && (playField[2, 2] == playerChar)) // 7,8,9
+                      || ((playField[0, 0] == playerChar) && (playField[1, 1] == playerChar) && (playField[2, 2] == playerChar)) // 1,5,9
+                      || ((playField[0, 0] == playerChar) && (playField[1, 0] == playerChar) && (playField[2, 0] == playerChar)) // 1,4,7
+                      || ((playField[0, 1] == playerChar) && (playField[1, 1] == playerChar) && (playField[2, 1] == playerChar)) // 2,5,8
+                      || ((playField[0, 2] == playerChar) && (playField[1, 2] == playerChar) && (playField[2, 2] == playerChar)) // 3,6,9
+                      || ((playField[0, 2] == playerChar) && (playField[1, 1] == playerChar) && (playField[2, 0] == playerChar)) // 3,5,7
+                        )
+                    {
+                        if (playerChar == 'X')
+                        {
+                            Console.WriteLine("\nPlaywer 2 has won!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nPlayer 1 has won! ");
+                        }
+                        Console.WriteLine("Please press any key to reset the game!");
+                        Console.ReadKey();
+
+                        ResetField();
+                        break;
+                    }
+
+                    else if (turns == 10)
+                    {
+                        Console.WriteLine("\n Draw");
+                        Console.WriteLine("Please press any key to reset the game!");
+                        Console.ReadKey();
+                        ResetField();
+                        break;
+                    }
+                }
+
+                #endregion
+
+
+                #region
+                // Test if field is already taken
+
                 do
                 {
                     Console.Write("\nPlayer {0} : Choose your field! ", player);
-                    input = Convert.ToInt32(Console.ReadLine());
+                    try
+                    {
+                        input = Convert.ToInt32(Console.ReadLine());
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Please enter a number! : ");
+                    }
+
+                    if ((input == 1) && (playField[0, 0] == '1'))
+                        inputCorrect = true;
+                    else if ((input == 2) && (playField[0, 1] == '2'))
+                        inputCorrect = true;
+                    else if ((input == 3) && (playField[0, 2] == '3'))
+                        inputCorrect = true;
+                    else if ((input == 4) && (playField[1, 0] == '4'))
+                        inputCorrect = true;
+                    else if ((input == 5) && (playField[1, 1] == '5'))
+                        inputCorrect = true;
+                    else if ((input == 6) && (playField[1, 2] == '6'))
+                        inputCorrect = true;
+                    else if ((input == 7) && (playField[2, 0] == '7'))
+                        inputCorrect = true;
+                    else if ((input == 8) && (playField[2, 1] == '8'))
+                        inputCorrect = true;
+                    else if ((input == 9) && (playField[2, 2] == '9'))
+                        inputCorrect = true;
+                    else
+                    {
+                        Console.WriteLine("\n Incorrect input! Please use another field");
+                        inputCorrect = false;
+                    }
 
                 } while (!inputCorrect);
+
+                #endregion
 
                 Console.ReadKey();
 
             } while (true);
-        
+
+        }
+
+        public static void ResetField()
+        {
+            char[,] playFieldInitial =
+        {
+            {'1', '2', '3'}, // Row 0
+            {'4', '5', '6'}, // Row 1
+            {'7', '8', '9'}, // Row 2
+        };
+            playField = playFieldInitial;
+            SetField();
+            turns = 0;
         }
 
         public static void SetField()
         {
             Console.Clear();
             Console.WriteLine("     |     |     ");
-            Console.WriteLine("  {0}  |  {1}  |  {2}", playField[0,0], playField[0,1], playField[0,2]);
+            Console.WriteLine("  {0}  |  {1}  |  {2}", playField[0, 0], playField[0, 1], playField[0, 2]);
             Console.WriteLine("_____|_____|_____");
             Console.WriteLine("     |     |     ");
             Console.WriteLine("  {0}  |  {1}  |  {2}", playField[1, 0], playField[1, 1], playField[1, 2]);
@@ -65,20 +159,11 @@ namespace TicTacToe_ConsoleGame
             Console.WriteLine("     |     |     ");
             Console.WriteLine("  {0}  |  {1}  |  {2}", playField[2, 0], playField[2, 1], playField[2, 2]);
             Console.WriteLine("_____|_____|_____");
-        
+            turns++;
         }
 
-        public static void EnterXorO(int player, int input)
+        public static void EnterXorO(char playerSign, int input)
         {
-            char playerSign = ' ';
-
-            if (player == 1)
-                playerSign = 'X';
-            if (player == 2)    
-                playerSign = 'O';
-
-
-
             switch (input)
             {
                 case 1: playField[0, 0] = playerSign; break;
@@ -91,7 +176,7 @@ namespace TicTacToe_ConsoleGame
                 case 8: playField[2, 1] = playerSign; break;
                 case 9: playField[2, 2] = playerSign; break;
             }
-           
+
         }
     }
 }
